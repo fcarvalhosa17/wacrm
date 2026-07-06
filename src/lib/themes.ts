@@ -14,6 +14,7 @@
  */
 
 export const THEME_IDS = [
+  "riopostes",
   "violet",
   "emerald",
   "cobalt",
@@ -23,7 +24,7 @@ export const THEME_IDS = [
 
 export type ThemeId = (typeof THEME_IDS)[number];
 
-export const DEFAULT_THEME: ThemeId = "violet";
+export const DEFAULT_THEME: ThemeId = "riopostes";
 
 export const STORAGE_KEY = "wacrm.theme";
 
@@ -67,6 +68,12 @@ export interface ThemeMeta {
 }
 
 export const THEMES: ReadonlyArray<ThemeMeta> = [
+  {
+    id: "riopostes",
+    name: "Rio Postes",
+    tagline: "Azul elétrico sobre navy profundo — a identidade da Rio Postes.",
+    swatch: "oklch(0.556 0.208 258)",
+  },
   {
     id: "violet",
     name: "Violet",
