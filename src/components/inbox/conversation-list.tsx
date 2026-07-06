@@ -9,8 +9,9 @@ import {
 } from "@/lib/inbox/conversations";
 import { cn } from "@/lib/utils";
 import type { Conversation, ConversationStatus, Tag } from "@/types";
-import { Search, ChevronDown, X } from "lucide-react";
+import { Search, ChevronDown, X, Inbox } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
@@ -397,8 +398,16 @@ export function ConversationList({
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
           </div>
         ) : filtered.length === 0 ? (
-          <div className="px-4 py-12 text-center">
-            <p className="text-sm text-muted-foreground">Nenhuma conversa encontrada</p>
+          <div className="flex flex-col items-center px-6 py-16 text-center">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-muted ring-1 ring-border">
+              <Inbox className="h-5 w-5 text-muted-foreground" />
+            </div>
+            <p className="text-sm font-medium text-foreground">
+              Nenhuma conversa encontrada
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              As conversas do WhatsApp aparecem aqui.
+            </p>
           </div>
         ) : (
           <div className="flex flex-col">
@@ -439,24 +448,38 @@ function ConversationItem({
   const timeAgo = conversation.last_message_at
     ? formatDistanceToNow(new Date(conversation.last_message_at), {
         addSuffix: false,
+        locale: ptBR,
       })
     : "";
+
+  const isUnread = conversation.unread_count > 0;
 
   return (
     <button
       onClick={handleClick}
       className={cn(
-        "flex w-full items-start gap-3 px-3 py-3 text-left transition-colors hover:bg-muted/50",
-        isActive && "border-l-2 border-primary bg-muted/70"
+        "group relative flex w-full cursor-pointer items-start gap-3 px-3.5 py-3 text-left transition-colors duration-200",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/50",
+        isActive ? "bg-primary/[0.08]" : "hover:bg-muted/50",
       )}
     >
+      {/* Active accent bar */}
+      {isActive && (
+        <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-r-full bg-primary" />
+      )}
+
       {/* Avatar */}
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-medium text-foreground">
+      <div
+        className={cn(
+          "flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-secondary text-sm font-semibold text-foreground ring-1",
+          isUnread ? "ring-2 ring-primary/40" : "ring-border",
+        )}
+      >
         {contact?.avatar_url ? (
           <img
             src={contact.avatar_url}
             alt={displayName}
-            className="h-10 w-10 rounded-full object-cover"
+            className="h-full w-full rounded-full object-cover"
           />
         ) : (
           initials
@@ -466,25 +489,46 @@ function ConversationItem({
       {/* Content */}
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between gap-2">
-          <span className="truncate text-sm font-medium text-foreground">
+          <span
+            className={cn(
+              "truncate text-sm",
+              isUnread
+                ? "font-semibold text-foreground"
+                : "font-medium text-foreground/90",
+            )}
+          >
             {displayName}
           </span>
-          <span className="shrink-0 text-[10px] text-muted-foreground">{timeAgo}</span>
+          <span
+            className={cn(
+              "shrink-0 text-[11px] tabular-nums",
+              isUnread ? "font-medium text-primary" : "text-muted-foreground",
+            )}
+          >
+            {timeAgo}
+          </span>
         </div>
-        <div className="mt-0.5 flex items-center justify-between gap-2">
-          <p className="truncate text-xs text-muted-foreground">
+        <div className="mt-1 flex items-center justify-between gap-2">
+          <p
+            className={cn(
+              "truncate text-xs",
+              isUnread
+                ? "font-medium text-foreground/70"
+                : "text-muted-foreground",
+            )}
+          >
             {conversation.last_message_text || "Nenhuma mensagem ainda"}
           </p>
           <div className="flex shrink-0 items-center gap-1.5">
-            {conversation.unread_count > 0 && (
-              <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
+            {isUnread && (
+              <span className="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground shadow-sm shadow-primary/30">
                 {conversation.unread_count}
               </span>
             )}
             <span
               className={cn(
                 "h-2 w-2 rounded-full",
-                STATUS_COLORS[conversation.status]
+                STATUS_COLORS[conversation.status],
               )}
               title={conversation.status}
             />

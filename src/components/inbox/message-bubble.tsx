@@ -27,18 +27,22 @@ interface MessageBubbleProps {
   onToggleReaction?: (emoji: string) => void;
 }
 
+// Status icons always render on the outbound (primary-fill) bubble, so
+// their colors are tuned for contrast against that blue — not the neutral
+// foreground. `read` gets a bright sky tint (the classic "seen" cue) that
+// stays legible on the primary surface.
 function StatusIcon({ status }: { status: Message["status"] }) {
   switch (status) {
     case "sending":
-      return <Clock className="h-3 w-3 text-muted-foreground" />;
+      return <Clock className="h-3 w-3 text-primary-foreground/60" />;
     case "sent":
-      return <Check className="h-3 w-3 text-muted-foreground" />;
+      return <Check className="h-3 w-3 text-primary-foreground/60" />;
     case "delivered":
-      return <CheckCheck className="h-3 w-3 text-muted-foreground" />;
+      return <CheckCheck className="h-3 w-3 text-primary-foreground/60" />;
     case "read":
-      return <CheckCheck className="h-3 w-3 text-blue-400" />;
+      return <CheckCheck className="h-3 w-3 text-sky-300" />;
     case "failed":
-      return <XCircle className="h-3 w-3 text-red-400" />;
+      return <XCircle className="h-3 w-3 text-red-300" />;
     default:
       return null;
   }
@@ -262,10 +266,10 @@ export function MessageBubble({
     >
       <div
         className={cn(
-          "relative rounded-2xl px-3 py-2",
+          "relative rounded-2xl px-3 py-2 shadow-sm",
           isAgent
-            ? "rounded-br-md bg-primary text-primary-foreground"
-            : "rounded-bl-md bg-muted text-foreground",
+            ? "rounded-br-md bg-primary text-primary-foreground shadow-primary/20"
+            : "rounded-bl-md border border-border/60 bg-muted text-foreground",
         )}
       >
         {reply && (
@@ -284,7 +288,7 @@ export function MessageBubble({
         >
           <span
             className={cn(
-              "text-[10px]",
+              "text-[10px] tabular-nums",
               // Outbound bubbles sit on the primary fill, so the
               // timestamp must read against that (not the neutral
               // foreground) — otherwise it goes low-contrast in light
