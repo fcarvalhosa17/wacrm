@@ -74,6 +74,7 @@ function SignupPageInner() {
       options: {
         data: {
           full_name: fullName,
+          invite_token: inviteToken,
         },
         ...(emailRedirectTo ? { emailRedirectTo } : {}),
       },
@@ -88,6 +89,37 @@ function SignupPageInner() {
     setSuccess(true);
     setLoading(false);
   };
+
+  if (!inviteToken) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <Card className="w-full max-w-md border-border bg-card">
+          <CardHeader className="items-center text-center">
+            <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+              <UsersRound className="h-6 w-6 text-primary" />
+            </div>
+            <CardTitle className="text-xl text-foreground">
+              Cadastro por convite
+            </CardTitle>
+            <CardDescription className="text-muted-foreground">
+              Novas contas só podem ser criadas a partir de um link de convite
+              enviado por um administrador da equipe.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link href="/login">
+              <Button
+                variant="outline"
+                className="w-full border-border text-muted-foreground hover:bg-muted hover:text-foreground"
+              >
+                Voltar para entrar
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (success) {
     return (
